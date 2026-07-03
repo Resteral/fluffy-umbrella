@@ -89,6 +89,14 @@ function OmegleDebate({ onBack }) {
   const [turn, setTurn] = useState('user'); // user or opponent
   const [spectatorScore, setSpectatorScore] = useState(50); // 0 (Opponent winning) to 100 (User winning)
   const [turnCount, setTurnCount] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const radarIntervalRef = useRef(null);
   const chatEndRef = useRef(null);
@@ -301,20 +309,20 @@ function OmegleDebate({ onBack }) {
 
       {(matchStatus === 'debating' || matchStatus === 'ended') && (
         /* ACTIVE DEBATE ARENA */
-        <div style={styles.arenaContainer}>
-          <div style={styles.arenaHeader}>
-            <button className="btn btn-secondary" onClick={resetDebate} style={styles.backBtn}>
+        <div style={{ ...styles.arenaContainer, gap: isMobile ? '16px' : '24px' }}>
+          <div style={{ ...styles.arenaHeader, flexDirection: isMobile ? 'column-reverse' : 'row', gap: isMobile ? '12px' : '16px', alignItems: isMobile ? 'center' : 'center' }}>
+            <button className="btn btn-secondary" onClick={resetDebate} style={{ ...styles.backBtn, width: isMobile ? '100%' : 'auto' }}>
               &larr; Quit Match
             </button>
-            <span style={styles.arenaTopicDisplay}>Topic: {selectedTopic.title}</span>
-            <div style={{ width: '80px' }}></div>
+            <span style={{ ...styles.arenaTopicDisplay, fontSize: isMobile ? '0.95rem' : '1.1rem', textAlign: 'center' }}>Topic: {selectedTopic.title}</span>
+            {!isMobile && <div style={{ width: '80px' }}></div>}
           </div>
 
           {/* Spectator Sentiment Meter */}
           <div className="glass-panel" style={styles.sentimentCard}>
-            <div style={styles.sentimentLabels}>
+            <div style={{ ...styles.sentimentLabels, fontSize: isMobile ? '0.75rem' : '0.9rem' }}>
               <span style={{ color: 'var(--accent-pink)', fontWeight: 'bold' }}>{opponent.name} (CON)</span>
-              <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Spectator Sentiment</span>
+              {!isMobile && <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Spectator Sentiment</span>}
               <span style={{ color: 'var(--accent-cyan)', fontWeight: 'bold' }}>You (PRO)</span>
             </div>
             <div style={styles.barTrack}>
@@ -323,23 +331,25 @@ function OmegleDebate({ onBack }) {
             </div>
           </div>
 
-          <div style={styles.arenaGrid}>
+          <div style={{ ...styles.arenaGrid, gridTemplateColumns: isMobile ? '1fr' : '1fr 3fr', gap: isMobile ? '16px' : '24px' }}>
             {/* Left Column: Opponent Bio Panel */}
-            <div className="glass-panel" style={styles.sideProfilePanel}>
-              <div style={styles.profileBox}>
-                <div style={{ ...styles.avatarContainer, borderColor: 'var(--accent-pink)' }}>
-                  <User size={32} color="var(--accent-pink)" />
+            <div className="glass-panel" style={{ ...styles.sideProfilePanel, padding: isMobile ? '12px' : '24px' }}>
+              <div style={{ ...styles.profileBox, flexDirection: isMobile ? 'row' : 'column', justifyContent: isMobile ? 'center' : 'flex-start', gap: isMobile ? '12px' : '16px', alignItems: 'center' }}>
+                <div style={{ ...styles.avatarContainer, borderColor: 'var(--accent-pink)', width: isMobile ? '40px' : '72px', height: isMobile ? '40px' : '72px' }}>
+                  <User size={isMobile ? 20 : 32} color="var(--accent-pink)" />
                 </div>
-                <h3 style={styles.profileName}>{opponent.name}</h3>
-                <span style={styles.profileStanceTag}>
-                  STANCE: {stance === 'pro' ? 'CON' : 'PRO'}
-                </span>
-                <p style={styles.profileBio}>"{opponent.bio}"</p>
+                <div style={{ textAlign: isMobile ? 'left' : 'center' }}>
+                  <h3 style={{ ...styles.profileName, fontSize: isMobile ? '1.05rem' : '1.25rem' }}>{opponent.name}</h3>
+                  <span style={{ ...styles.profileStanceTag, display: 'inline-block', marginTop: '4px' }}>
+                    STANCE: {stance === 'pro' ? 'CON' : 'PRO'}
+                  </span>
+                </div>
+                {!isMobile && <p style={styles.profileBio}>"{opponent.bio}"</p>}
               </div>
             </div>
 
             {/* Middle Column: Chat feed */}
-            <div className="glass-panel" style={styles.chatArenaPanel}>
+            <div className="glass-panel" style={{ ...styles.chatArenaPanel, height: isMobile ? '350px' : '420px' }}>
               <div style={styles.chatAreaBody}>
                 {messages.map((msg) => (
                   <div 
@@ -362,10 +372,12 @@ function OmegleDebate({ onBack }) {
                         ...styles.debateBubble,
                         backgroundColor: msg.isUser ? 'rgba(0, 242, 254, 0.1)' : 'rgba(255, 0, 128, 0.1)',
                         borderColor: msg.isUser ? 'var(--accent-cyan)' : 'var(--accent-pink)',
-                        alignItems: msg.isUser ? 'flex-end' : 'flex-start'
+                        alignItems: msg.isUser ? 'flex-end' : 'flex-start',
+                        maxWidth: isMobile ? '95%' : '80%',
+                        padding: isMobile ? '10px 12px' : '12px 16px'
                       }}>
                         <span style={styles.bubbleSender}>{msg.sender}</span>
-                        <p style={styles.bubbleText}>{msg.text}</p>
+                        <p style={{ ...styles.bubbleText, fontSize: isMobile ? '0.85rem' : '0.95rem' }}>{msg.text}</p>
                       </div>
                     )}
                   </div>

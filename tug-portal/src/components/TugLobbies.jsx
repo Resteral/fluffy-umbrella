@@ -32,6 +32,14 @@ function TugLobbies({ onBack }) {
   const [winner, setWinner] = useState(null);
   const [newRoomName, setNewRoomName] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const gameLoopRef = useRef(null);
   const chatSimRef = useRef(null);
@@ -292,9 +300,9 @@ function TugLobbies({ onBack }) {
             <div style={{ width: '100px' }}></div> {/* Spacer */}
           </div>
 
-          <div style={styles.gameLayout}>
+          <div style={{ ...styles.gameLayout, gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', minHeight: isMobile ? 'auto' : '480px', gap: isMobile ? '16px' : '24px' }}>
             {/* Left Side: Game Canvas & Action */}
-            <div className="glass-panel" style={styles.arenaPanel}>
+            <div className="glass-panel" style={{ ...styles.arenaPanel, padding: isMobile ? '24px 16px' : '40px', minHeight: isMobile ? '350px' : '450px' }}>
               {gameStatus === 'idle' && (
                 <div style={styles.setupScreen}>
                   <Swords size={48} color="var(--accent-purple)" className="float-animation" />
@@ -370,7 +378,7 @@ function TugLobbies({ onBack }) {
                   <div style={styles.actionContainer}>
                     <button 
                       className={`btn ${teamSelection === 'blue' ? 'btn-accent' : 'btn-danger'}`} 
-                      style={styles.pullButton}
+                      style={{ ...styles.pullButton, width: isMobile ? '180px' : '220px', height: isMobile ? '60px' : '70px', fontSize: isMobile ? '1.2rem' : '1.4rem' }}
                       onClick={handleUserPull}
                     >
                       PULL!!!
@@ -404,7 +412,7 @@ function TugLobbies({ onBack }) {
             </div>
 
             {/* Right Side: Chat & Spectators */}
-            <div className="glass-panel" style={styles.chatPanel}>
+            <div className="glass-panel" style={{ ...styles.chatPanel, maxHeight: isMobile ? '320px' : '520px' }}>
               <div style={styles.chatHeader}>
                 <div style={styles.chatTitleBox}>
                   <span style={styles.chatTitle}>Lobby Chat</span>

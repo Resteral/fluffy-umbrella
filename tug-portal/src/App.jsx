@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Gamepad2, MessageSquareCode, Terminal, Sparkles, Home, ArrowLeft } from 'lucide-react';
 import TugLobbies from './components/TugLobbies';
 import OmegleDebate from './components/OmegleDebate';
@@ -6,6 +6,14 @@ import DevSpace from './components/DevSpace';
 
 function App() {
   const [currentView, setCurrentView] = useState('hub');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const renderView = () => {
     switch (currentView) {
@@ -27,12 +35,12 @@ function App() {
         <section style={styles.heroSection}>
           <div style={styles.heroGlow}></div>
           <div className="float-animation" style={styles.iconWrapper}>
-            <Sparkles size={48} color="var(--accent-cyan)" />
+            <Sparkles size={isMobile ? 32 : 48} color="var(--accent-cyan)" />
           </div>
-          <h1 style={styles.heroTitle}>
+          <h1 style={{ ...styles.heroTitle, fontSize: isMobile ? '2.5rem' : '4.5rem' }}>
             NEON<span className="glow-text-purple">PORTAL</span>
           </h1>
-          <p style={styles.heroSubtitle}>
+          <p style={{ ...styles.heroSubtitle, fontSize: isMobile ? '0.95rem' : '1.25rem' }}>
             A futuristic hub for real-time physics duels, high-stakes debates, and instant web hosting.
           </p>
         </section>
@@ -42,11 +50,11 @@ function App() {
           {/* Card 1: Tug Lobbies */}
           <div 
             className="glass-panel glass-panel-hover" 
-            style={styles.card}
+            style={{ ...styles.card, padding: isMobile ? '24px 20px' : '40px 32px' }}
             onClick={() => setCurrentView('tug')}
           >
             <div style={{ ...styles.cardIconBox, backgroundColor: 'rgba(138, 43, 226, 0.15)', borderColor: 'var(--accent-purple)' }}>
-              <Gamepad2 size={32} color="var(--accent-purple)" />
+              <Gamepad2 size={28} color="var(--accent-purple)" />
             </div>
             <h2 style={styles.cardTitle}>Tug Lobbies</h2>
             <p style={styles.cardDesc}>
@@ -60,11 +68,11 @@ function App() {
           {/* Card 2: Omegle Debate */}
           <div 
             className="glass-panel glass-panel-hover" 
-            style={styles.card}
+            style={{ ...styles.card, padding: isMobile ? '24px 20px' : '40px 32px' }}
             onClick={() => setCurrentView('debate')}
           >
             <div style={{ ...styles.cardIconBox, backgroundColor: 'rgba(255, 0, 128, 0.15)', borderColor: 'var(--accent-pink)' }}>
-              <MessageSquareCode size={32} color="var(--accent-pink)" />
+              <MessageSquareCode size={28} color="var(--accent-pink)" />
             </div>
             <h2 style={styles.cardTitle}>Omegle Debate</h2>
             <p style={styles.cardDesc}>
@@ -78,11 +86,11 @@ function App() {
           {/* Card 3: Dev Space */}
           <div 
             className="glass-panel glass-panel-hover" 
-            style={styles.card}
+            style={{ ...styles.card, padding: isMobile ? '24px 20px' : '40px 32px' }}
             onClick={() => setCurrentView('devspace')}
           >
             <div style={{ ...styles.cardIconBox, backgroundColor: 'rgba(0, 242, 254, 0.15)', borderColor: 'var(--accent-cyan)' }}>
-              <Terminal size={32} color="var(--accent-cyan)" />
+              <Terminal size={28} color="var(--accent-cyan)" />
             </div>
             <h2 style={styles.cardTitle}>Developer Space</h2>
             <p style={styles.cardDesc}>
@@ -100,28 +108,28 @@ function App() {
   return (
     <div className="app-container" style={styles.appWrapper}>
       {/* Top Header */}
-      <header className="glass-panel" style={styles.header}>
+      <header className="glass-panel" style={{ ...styles.header, padding: isMobile ? '12px 16px' : '16px 40px' }}>
         <div style={styles.logoContainer} onClick={() => setCurrentView('hub')}>
           <div style={styles.logoDot}></div>
-          <span style={styles.logoText}>NEONPORTAL</span>
+          <span style={{ ...styles.logoText, fontSize: isMobile ? '1rem' : '1.25rem' }}>NEONPORTAL</span>
         </div>
         <nav style={styles.nav}>
           {currentView !== 'hub' && (
             <button className="btn btn-secondary" onClick={() => setCurrentView('hub')} style={styles.backButton}>
-              <ArrowLeft size={16} /> Back to Hub
+              <ArrowLeft size={16} /> {!isMobile && 'Back to Hub'}
             </button>
           )}
           <button 
             className={`btn ${currentView === 'hub' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setCurrentView('hub')}
           >
-            <Home size={16} /> Home
+            <Home size={16} /> {!isMobile && 'Home'}
           </button>
         </nav>
       </header>
 
       {/* Dynamic Content */}
-      <div style={styles.contentBody}>
+      <div style={{ ...styles.contentBody, padding: isMobile ? '20px 12px' : '40px 20px' }}>
         {renderView()}
       </div>
 

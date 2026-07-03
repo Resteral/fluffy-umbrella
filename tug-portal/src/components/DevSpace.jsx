@@ -181,8 +181,22 @@ function DevSpace({ onBack }) {
   const [previewUrl, setPreviewUrl] = useState('');
   const [viewMode, setViewMode] = useState('split'); // split, code, preview
   const [fileError, setFileError] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
   
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (mobile && viewMode === 'split') {
+        setViewMode('preview');
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [viewMode]);
 
   // Load custom projects from localStorage
   useEffect(() => {
@@ -308,13 +322,13 @@ function DevSpace({ onBack }) {
 
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
+      <div style={{ ...styles.header, flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', gap: isMobile ? '16px' : '0' }}>
         <div>
           <h2 style={styles.viewTitle}>Developer Space</h2>
           <p style={styles.viewDesc}>Create or upload your web creations. Host and preview them locally in our sandbox environment.</p>
         </div>
-        <div style={styles.actionButtons}>
-          <button className="btn btn-secondary" onClick={() => fileInputRef.current?.click()}>
+        <div style={{ ...styles.actionButtons, width: isMobile ? '100%' : 'auto', justifyContent: isMobile ? 'space-between' : 'flex-start' }}>
+          <button className="btn btn-secondary" onClick={() => fileInputRef.current?.click()} style={{ flex: isMobile ? 1 : 'none' }}>
             <Upload size={16} /> Upload HTML
           </button>
           <input
@@ -324,7 +338,7 @@ function DevSpace({ onBack }) {
             style={{ display: 'none' }}
             accept=".html,.htm"
           />
-          <button className="btn btn-primary" onClick={handleNewProject}>
+          <button className="btn btn-primary" onClick={handleNewProject} style={{ flex: isMobile ? 1 : 'none' }}>
             <Plus size={16} /> New File
           </button>
         </div>
@@ -337,9 +351,9 @@ function DevSpace({ onBack }) {
         </div>
       )}
 
-      <div style={styles.editorLayout}>
+      <div style={{ ...styles.editorLayout, gridTemplateColumns: isMobile ? '1fr' : '1fr 3fr', gap: isMobile ? '16px' : '24px' }}>
         {/* Left column: Files / Gallery list */}
-        <div className="glass-panel" style={styles.galleryPanel}>
+        <div className="glass-panel" style={{ ...styles.galleryPanel, maxHeight: isMobile ? '180px' : '600px' }}>
           <h3 style={styles.panelTitle}>Project Gallery</h3>
           
           <div style={styles.projectList}>
@@ -392,30 +406,32 @@ function DevSpace({ onBack }) {
         </div>
 
         {/* Right column: Editor & Sandbox */}
-        <div className="glass-panel" style={styles.workspacePanel}>
+        <div className="glass-panel" style={{ ...styles.workspacePanel, height: isMobile ? '450px' : '600px' }}>
           {/* Editor Header controls */}
-          <div style={styles.workspaceHeader}>
+          <div style={{ ...styles.workspaceHeader, flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', gap: isMobile ? '12px' : '0' }}>
             <input 
               type="text" 
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               placeholder="Project Name"
-              style={styles.nameInput}
+              style={{ ...styles.nameInput, width: isMobile ? '100%' : '200px' }}
             />
 
-            <div style={styles.controlRow}>
+            <div style={{ ...styles.controlRow, width: isMobile ? '100%' : 'auto', justifyContent: isMobile ? 'space-between' : 'flex-end' }}>
               {/* View selectors */}
-              <div style={styles.viewSelector}>
-                <button 
-                  style={{
-                    ...styles.viewBtn,
-                    backgroundColor: viewMode === 'split' ? 'rgba(255,255,255,0.08)' : 'transparent',
-                    color: viewMode === 'split' ? 'var(--accent-cyan)' : 'var(--text-secondary)'
-                  }}
-                  onClick={() => setViewMode('split')}
-                >
-                  Split View
-                </button>
+              <div style={{ ...styles.viewSelector, flex: isMobile ? 1 : 'none' }}>
+                {!isMobile && (
+                  <button 
+                    style={{
+                      ...styles.viewBtn,
+                      backgroundColor: viewMode === 'split' ? 'rgba(255,255,255,0.08)' : 'transparent',
+                      color: viewMode === 'split' ? 'var(--accent-cyan)' : 'var(--text-secondary)'
+                    }}
+                    onClick={() => setViewMode('split')}
+                  >
+                    Split View
+                  </button>
+                )}
                 <button 
                   style={{
                     ...styles.viewBtn,
