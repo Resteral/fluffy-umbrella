@@ -11,6 +11,7 @@ Data\Zones.lua
 Data\Classes.lua
 Data\Steps.lua
 Data\Gear.lua
+Data\LootTables.lua
 
 # Core logic
 Core\Utils.lua
@@ -23,6 +24,7 @@ UI\MainFrame.lua
 UI\StepList.lua
 UI\ClassPanel.lua
 UI\Tooltip.lua
+UI\TargetLootFrame.lua
 
 # Entry point
 CoALevelGuide.lua
