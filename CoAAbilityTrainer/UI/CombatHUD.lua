@@ -90,6 +90,12 @@ function CoAAT_CombatHUD.Build()
     MakeSectionDraggable(targetSection, "targetSection", "Target Headbar (Drag)")
     hud._targetSection = targetSection
 
+    -- 00. Player Card (Below Target Headbar, 68px)
+    local playerCardSection = CreateFrame("Frame", nil, hud)
+    playerCardSection:SetSize(HUD_W, 68)
+    MakeSectionDraggable(playerCardSection, "playerCardSection", "Player Card (Drag)")
+    hud._playerCardSection = playerCardSection
+
     -- 1. Rotation Helper (Top suggested floating icon, 50px)
     local rotSection = CreateFrame("Frame", nil, hud)
     rotSection:SetSize(HUD_W, 50)
@@ -122,6 +128,8 @@ function CoAAT_CombatHUD.Build()
 
     -- Build sub-panels inside their sections
     CoAAT_TargetHeadbar.Build(targetSection)
+    CoAAT_PlayerCard.Build(playerCardSection)
+    CoAAT_CursorHUD.Build(hud)
     CoAAT_RotationHelper.Build(rotSection)
     CoAAT_AuraDisplay.Build(auraSection)
     CoAAT_ResourceBar.Build(resSection, 0, -6)
@@ -152,7 +160,7 @@ function CoAAT_CombatHUD.Build()
             end
         end
 
-        for _, section in ipairs({ self._targetSection, self._rotSection, self._auraSection, self._resSection, self._castSection, self._cdSection }) do
+        for _, section in ipairs({ self._targetSection, self._playerCardSection, self._rotSection, self._auraSection, self._resSection, self._castSection, self._cdSection }) do
             if section and section._dragBorder then
                 if hideBorder then
                     section._dragBorder:Hide()
@@ -218,6 +226,13 @@ function CoAAT_CombatHUD.RefreshLayout()
         yOffset = yOffset - 44 - 4
     end
 
+    -- 00. Player Card (Target Player frame)
+    if hud._playerCardSection then
+        hud._playerCardSection:Show()
+        AlignSection(hud._playerCardSection, "playerCardSection", yOffset)
+        yOffset = yOffset - 68 - 4
+    end
+
     -- 1. Rotation Helper (Floating Suggested Action)
     if db.showRotHelper and hud._rotSection then
         hud._rotSection:Show()
@@ -266,6 +281,10 @@ function CoAAT_CombatHUD.RefreshLayout()
     hud:SetHeight(finalHeight)
     if hud._borderFrame then
         hud._borderFrame:SetSize(HUD_W, finalHeight)
+    end
+
+    if CoAAT_CursorHUD and CoAAT_CursorHUD.Refresh then
+        CoAAT_CursorHUD.Refresh()
     end
 end
 

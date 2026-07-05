@@ -272,10 +272,19 @@ function CoAAT_SettingsFrame.Build()
         CoAAT_CombatHUD.RefreshLayout()
     end)
 
+    local cursorHUDCB = CreateFrame("CheckButton", "CoAATCursorHUDCB", f, "UICheckButtonTemplate")
+    cursorHUDCB:SetPoint("TOPLEFT", f, "TOPLEFT", 190, -234)
+    _G[cursorHUDCB:GetName() .. "Text"]:SetText("|cffddddddAttach Vitals to Cursor|r")
+    cursorHUDCB:SetChecked(CoAAT_DB and CoAAT_DB.showCursorHUD or false)
+    cursorHUDCB:SetScript("OnClick", function(self)
+        if CoAAT_DB then CoAAT_DB.showCursorHUD = self:GetChecked() end
+        CoAAT_CombatHUD.RefreshLayout()
+    end)
+
     -- Divider
     local div2 = f:CreateTexture(nil, "OVERLAY")
     div2:SetSize(352, 1)
-    div2:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -238)
+    div2:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -264)
     div2:SetTexture(0.0, 0.4, 0.7, 0.4)
 
     -- Sliders: Scale & Opacity (Y = -263)
@@ -409,6 +418,7 @@ function CoAAT_SettingsFrame.OnOpen()
     _G["CoAATShowProcAlertCB"]:SetChecked(CoAAT_DB and CoAAT_DB.showProcAlerts ~= false)
     _G["CoAATCdStripCB"]:SetChecked(CoAAT_DB and CoAAT_DB.showCooldowns ~= false)
     _G["CoAATHideBorderCB"]:SetChecked(CoAAT_DB and CoAAT_DB.hideDragBorder or false)
+    _G["CoAATCursorHUDCB"]:SetChecked(CoAAT_DB and CoAAT_DB.showCursorHUD or false)
 
     -- Sync sliders
     if f._scaleSlider then

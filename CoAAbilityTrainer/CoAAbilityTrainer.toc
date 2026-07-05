@@ -20,6 +20,8 @@ UI\AuraDisplay.lua
 UI\RotationHelper.lua
 UI\CastingBar.lua
 UI\TargetHeadbar.lua
+UI\PlayerCard.lua
+UI\CursorHUD.lua
 UI\CombatHUD.lua
 UI\TutorialPanel.lua
 UI\SettingsFrame.lua
