@@ -263,6 +263,15 @@ function CoAAT_SettingsFrame.Build()
         CoAAT_CombatHUD.RefreshLayout()
     end)
 
+    local hideBorderCB = CreateFrame("CheckButton", "CoAATHideBorderCB", f, "UICheckButtonTemplate")
+    hideBorderCB:SetPoint("TOPLEFT", f, "TOPLEFT", 190, -208)
+    _G[hideBorderCB:GetName() .. "Text"]:SetText("|cffddddddHide Drag Border|r")
+    hideBorderCB:SetChecked(CoAAT_DB and CoAAT_DB.hideDragBorder or false)
+    hideBorderCB:SetScript("OnClick", function(self)
+        if CoAAT_DB then CoAAT_DB.hideDragBorder = self:GetChecked() end
+        CoAAT_CombatHUD.RefreshLayout()
+    end)
+
     -- Divider
     local div2 = f:CreateTexture(nil, "OVERLAY")
     div2:SetSize(352, 1)
@@ -385,6 +394,7 @@ function CoAAT_SettingsFrame.OnOpen()
     _G["CoAATAurasCB"]:SetChecked(CoAAT_DB and CoAAT_DB.showAuras ~= false)
     _G["CoAATShowProcAlertCB"]:SetChecked(CoAAT_DB and CoAAT_DB.showProcAlerts ~= false)
     _G["CoAATCdStripCB"]:SetChecked(CoAAT_DB and CoAAT_DB.showCooldowns ~= false)
+    _G["CoAATHideBorderCB"]:SetChecked(CoAAT_DB and CoAAT_DB.hideDragBorder or false)
 
     -- Sync sliders
     if f._scaleSlider then

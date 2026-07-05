@@ -65,6 +65,7 @@ local function InitDB()
     if CoAAT_DB.showResourceBar  == nil then CoAAT_DB.showResourceBar  = true  end
     if CoAAT_DB.showCooldowns    == nil then CoAAT_DB.showCooldowns    = true  end
     if CoAAT_DB.showAuras        == nil then CoAAT_DB.showAuras        = true  end
+    if CoAAT_DB.hideDragBorder   == nil then CoAAT_DB.hideDragBorder   = false end
 end
 
 -- ─────────────────────────────────────────────────────────────────────────────

@@ -110,9 +110,16 @@ function CoAAT_CombatHUD.Build()
             self._dragHint:SetAlpha(0)
             if self._borderFrame then self._borderFrame:Hide() end
         else
-            self._dragBG:SetAlpha(1)
-            self._dragHint:SetAlpha(1)
-            if self._borderFrame then self._borderFrame:Show() end
+            local hideBorder = (CoAAT_DB and CoAAT_DB.hideDragBorder)
+            self._dragBG:SetAlpha(hideBorder and 0 or 1)
+            self._dragHint:SetAlpha(hideBorder and 0 or 1)
+            if self._borderFrame then
+                if hideBorder then
+                    self._borderFrame:Hide()
+                else
+                    self._borderFrame:Show()
+                end
+            end
         end
     end)
 
