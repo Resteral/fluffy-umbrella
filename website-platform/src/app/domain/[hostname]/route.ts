@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { hostname: string } }
+  { params }: { params: Promise<{ hostname: string }> }
 ) {
-  const hostname = params.hostname;
+  const { hostname } = await params;
   
   if (!hostname) {
     return new NextResponse('Missing hostname parameter', { status: 400 });

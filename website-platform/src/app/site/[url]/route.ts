@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { url: string } }
+  { params }: { params: Promise<{ url: string }> }
 ) {
-  const url = params.url;
+  const { url } = await params;
   
   if (!url) {
     return new NextResponse('Missing URL parameter', { status: 400 });

@@ -11,6 +11,9 @@ interface DevSpaceSite {
   url: string | null;
   likes_count?: number;
   shares_count?: number;
+  image?: string;
+  industry?: string;
+  category?: string;
 }
 
 export function DevSpaceSiteCard({ 

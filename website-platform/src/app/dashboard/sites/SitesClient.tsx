@@ -91,7 +91,7 @@ export default function SitesClient({ initialSites }: { initialSites: Site[] }) 
                   {site.custom_domain ? (
                     <span className="text-foreground font-medium flex items-center gap-2">
                       <a href={`https://${site.custom_domain}`} target="_blank" className="hover:underline">{site.custom_domain}</a>
-                      <button onClick={() => { setEditingDomainId(site.id); setDomainInput(site.custom_domain); }} className="text-xs text-primary hover:underline ml-2">Edit</button>
+                      <button onClick={() => { setEditingDomainId(site.id); setDomainInput(site.custom_domain || ''); }} className="text-xs text-primary hover:underline ml-2">Edit</button>
                     </span>
                   ) : (
                     <button onClick={() => { setEditingDomainId(site.id); setDomainInput(''); }} className="text-primary hover:underline font-medium">
