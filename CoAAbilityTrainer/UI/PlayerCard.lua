@@ -30,6 +30,23 @@ local function StyleNameplate(frame)
         end
     end
 
+    local regions = { frame:GetRegions() }
+    for _, region in ipairs(regions) do
+        local objType = region:GetObjectType()
+        if objType == "Texture" then
+            local texPath = region:GetTexture()
+            if texPath then
+                if string.find(texPath, "Nameplate%-Border") or 
+                   string.find(texPath, "Nameplate%-Glow") or
+                   string.find(texPath, "Nameplate%-LootBorder") then
+                    region:SetAlpha(0)
+                end
+            end
+        elseif objType == "FontString" then
+            region:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+        end
+    end
+
     if healthBar then
         local tex = healthBar:GetStatusBarTexture()
         if tex then
@@ -38,8 +55,9 @@ local function StyleNameplate(frame)
 
         if not healthBar.bg then
             local bg = healthBar:CreateTexture(nil, "BACKGROUND")
-            bg:SetAllPoints()
-            bg:SetTexture(0.04, 0.04, 0.08, 0.6)
+            bg:SetPoint("TOPLEFT", healthBar, "TOPLEFT", -1, 1)
+            bg:SetPoint("BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", 1, -1)
+            bg:SetTexture(0.04, 0.04, 0.08, 0.8)
             healthBar.bg = bg
         end
 
@@ -50,8 +68,9 @@ local function StyleNameplate(frame)
             end
             if not castBar.bg then
                 local bg = castBar:CreateTexture(nil, "BACKGROUND")
-                bg:SetAllPoints()
-                bg:SetTexture(0.04, 0.04, 0.08, 0.6)
+                bg:SetPoint("TOPLEFT", castBar, "TOPLEFT", -1, 1)
+                bg:SetPoint("BOTTOMRIGHT", castBar, "BOTTOMRIGHT", 1, -1)
+                bg:SetTexture(0.04, 0.04, 0.08, 0.8)
                 castBar.bg = bg
             end
         end
