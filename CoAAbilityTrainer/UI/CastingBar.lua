@@ -24,30 +24,50 @@ function CoAAT_CastingBar.Build(parent)
     -- Background
     local bg = f:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
-    bg:SetTexture(0.02, 0.02, 0.05, 0.95)
+    bg:SetTexture(0.04, 0.04, 0.08, 0.85)
     f._bg = bg
 
-    -- Border
-    local border = f:CreateTexture(nil, "OVERLAY")
-    border:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
-    border:SetVertexColor(0, 0, 0, 1)
-    
-    local function setBorder()
-        local bS = 1.5
-        local bTop = f:CreateTexture(nil, "OVERLAY"); bTop:SetSize(BAR_W, bS); bTop:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0); bTop:SetTexture(0,0,0,1)
-        local bBottom = f:CreateTexture(nil, "OVERLAY"); bBottom:SetSize(BAR_W, bS); bBottom:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 0, 0); bBottom:SetTexture(0,0,0,1)
-        local bLeft = f:CreateTexture(nil, "OVERLAY"); bLeft:SetSize(bS, BAR_H); bLeft:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0); bLeft:SetTexture(0,0,0,1)
-        local bRight = f:CreateTexture(nil, "OVERLAY"); bRight:SetSize(bS, BAR_H); bRight:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, 0); bRight:SetTexture(0,0,0,1)
+    -- Border Backdrop (1px thin outline)
+    local function makeBorderLine(p, w, h, x, y)
+        local l = f:CreateTexture(nil, "OVERLAY")
+        l:SetSize(w, h)
+        l:SetTexture(0, 0, 0, 0.8)
+        l:SetPoint(p, f, p, x, y)
     end
-    setBorder()
+    makeBorderLine("TOPLEFT", BAR_W + 2, 1, -1, 1)
+    makeBorderLine("BOTTOMLEFT", BAR_W + 2, 1, -1, -1)
+    makeBorderLine("TOPLEFT", 1, BAR_H + 2, -1, 1)
+    makeBorderLine("TOPRIGHT", 1, BAR_H + 2, 1, 1)
 
-    -- Fill
+    -- Left Spell Icon
+    local iconFrame = CreateFrame("Frame", nil, f)
+    iconFrame:SetSize(BAR_H, BAR_H)
+    iconFrame:SetPoint("RIGHT", f, "LEFT", -6, 0)
+    
+    local iconTex = iconFrame:CreateTexture(nil, "ARTWORK")
+    iconTex:SetAllPoints()
+    iconTex:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    f._iconTex = iconTex
+
+    local iconBorder = iconFrame:CreateTexture(nil, "BACKGROUND")
+    iconBorder:SetPoint("TOPLEFT", iconFrame, "TOPLEFT", -1, 1)
+    iconBorder:SetPoint("BOTTOMRIGHT", iconFrame, "BOTTOMRIGHT", 1, -1)
+    iconBorder:SetTexture(0, 0, 0, 0.8)
+
+    -- Progress Fill
     local fill = f:CreateTexture(nil, "ARTWORK")
-    fill:SetPoint("LEFT", f, "LEFT", 1, 0)
-    fill:SetPoint("TOP", f, "TOP", 0, -1)
-    fill:SetPoint("BOTTOM", f, "BOTTOM", 0, 1)
-    fill:SetTexture(1.0, 0.35, 0.0, 0.85) -- orange for cast
+    fill:SetPoint("LEFT", f, "LEFT", 0, 0)
+    fill:SetPoint("TOP", f, "TOP", 0, 0)
+    fill:SetPoint("BOTTOM", f, "BOTTOM", 0, 0)
+    fill:SetTexture(1.0, 0.45, 0.0, 0.9) -- Orange
     f._fill = fill
+
+    -- Spark Overlay
+    local spark = f:CreateTexture(nil, "OVERLAY")
+    spark:SetSize(8, BAR_H + 4)
+    spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+    spark:SetBlendMode("ADD")
+    f._spark = spark
 
     -- Spell Name Left
     local nameText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -80,7 +100,7 @@ function CoAAT_CastingBar.Build(parent)
         if unit ~= "player" then return end
         
         if event == "UNIT_SPELLCAST_START" then
-            local name, _, _, _, startTime, endTime = UnitCastingInfo("player")
+            local name, _, _, icon, startTime, endTime = UnitCastingInfo("player")
             if name then
                 castSpellName = name
                 castStartTime = startTime / 1000
@@ -90,6 +110,9 @@ function CoAAT_CastingBar.Build(parent)
                 isChanneling = false
                 f._fill:SetTexture(1.0, 0.45, 0.0, 0.9) -- Orange
                 f._nameText:SetText(name)
+                if f._iconTex and icon then
+                    f._iconTex:SetTexture(icon)
+                end
                 f:Show()
             end
         elseif event == "UNIT_SPELLCAST_DELAYED" then
@@ -100,7 +123,7 @@ function CoAAT_CastingBar.Build(parent)
                 castDuration = castEndTime - castStartTime
             end
         elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-            local name, _, _, _, startTime, endTime = UnitChannelInfo("player")
+            local name, _, _, icon, startTime, endTime = UnitChannelInfo("player")
             if name then
                 castSpellName = name
                 castStartTime = startTime / 1000
@@ -110,6 +133,9 @@ function CoAAT_CastingBar.Build(parent)
                 isChanneling = true
                 f._fill:SetTexture(0.0, 0.75, 1.0, 0.9) -- Cyan
                 f._nameText:SetText(name)
+                if f._iconTex and icon then
+                    f._iconTex:SetTexture(icon)
+                end
                 f:Show()
             end
         elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
@@ -139,8 +165,17 @@ function CoAAT_CastingBar.Build(parent)
         if isCasting then
             local elapsed = currentTime - castStartTime
             local pct = math.min(1.0, elapsed / castDuration)
-            self._fill:SetWidth(math.max(1, (BAR_W - 2) * pct))
+            self._fill:SetWidth(math.max(1, BAR_W * pct))
             self._timeText:SetText(string.format("%.1fs", math.max(0, castEndTime - currentTime)))
+            
+            if pct > 0 and pct < 1 then
+                self._spark:ClearAllPoints()
+                self._spark:SetPoint("CENTER", self._fill, "RIGHT", 0, 0)
+                self._spark:Show()
+            else
+                self._spark:Hide()
+            end
+
             if pct >= 1.0 then
                 isCasting = false
                 self:Hide()
@@ -148,8 +183,17 @@ function CoAAT_CastingBar.Build(parent)
         elseif isChanneling then
             local remaining = castEndTime - currentTime
             local pct = math.min(1.0, remaining / castDuration)
-            self._fill:SetWidth(math.max(1, (BAR_W - 2) * pct))
+            self._fill:SetWidth(math.max(1, BAR_W * pct))
             self._timeText:SetText(string.format("%.1fs", math.max(0, remaining)))
+            
+            if pct > 0 and pct < 1 then
+                self._spark:ClearAllPoints()
+                self._spark:SetPoint("CENTER", self._fill, "RIGHT", 0, 0)
+                self._spark:Show()
+            else
+                self._spark:Hide()
+            end
+
             if pct <= 0 then
                 isChanneling = false
                 self:Hide()
