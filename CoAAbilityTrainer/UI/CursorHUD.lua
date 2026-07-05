@@ -30,8 +30,9 @@ function CoAAT_CursorHUD.Build(parent)
     hp:SetStatusBarColor(0.2, 0.8, 0.4, 0.9)
 
     local hpBG = hp:CreateTexture(nil, "BACKGROUND")
-    hpBG:SetAllPoints()
-    hpBG:SetTexture(0, 0, 0, 0.6)
+    hpBG:SetPoint("TOPLEFT", hp, "TOPLEFT", -1, 1)
+    hpBG:SetPoint("BOTTOMRIGHT", hp, "BOTTOMRIGHT", 1, -1)
+    hpBG:SetTexture(0, 0, 0, 0.8)
 
     _healthBar = hp
 
@@ -49,8 +50,9 @@ function CoAAT_CursorHUD.Build(parent)
     mp:SetStatusBarColor(0.2, 0.5, 1.0, 0.9)
 
     local mpBG = mp:CreateTexture(nil, "BACKGROUND")
-    mpBG:SetAllPoints()
-    mpBG:SetTexture(0, 0, 0, 0.6)
+    mpBG:SetPoint("TOPLEFT", mp, "TOPLEFT", -1, 1)
+    mpBG:SetPoint("BOTTOMRIGHT", mp, "BOTTOMRIGHT", 1, -1)
+    mpBG:SetTexture(0, 0, 0, 0.8)
 
     _mpBar = mp
 
@@ -68,8 +70,9 @@ function CoAAT_CursorHUD.Build(parent)
     cast:SetStatusBarColor(1.0, 0.7, 0.0, 0.95)
 
     local castBG = cast:CreateTexture(nil, "BACKGROUND")
-    castBG:SetAllPoints()
-    castBG:SetTexture(0, 0, 0, 0.7)
+    castBG:SetPoint("TOPLEFT", cast, "TOPLEFT", -1, 1)
+    castBG:SetPoint("BOTTOMRIGHT", cast, "BOTTOMRIGHT", 1, -1)
+    castBG:SetTexture(0, 0, 0, 0.85)
 
     _castBar = cast
 
